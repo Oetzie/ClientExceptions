@@ -29,7 +29,7 @@
 
 	$_lang['clientexceptions.exception']								= 'Uitzondering';
 	$_lang['clientexceptions.exceptions']								= 'Uitzonderingen';
-	$_lang['clientexceptions.exceptions_desc']							= 'Hier kun je alle IP uitzonderingen instellen voor jouw MODX website. Een IP uitzondering is bedoelt om iemand aan de hand van zijn of haar IP nummer toegang tot de website te verlenen of weigeren. Voor een wildcard in het IP nummer gebruik %, gebruik een ^ om een IP reeks te starten (bv ^172.0.) of gebruik $ om een IP reeks te eindigen (bv .0.1$).';
+	$_lang['clientexceptions.exceptions_desc']							= 'Hier kun je alle IP uitzonderingen beheren voor jouw website. Een IP uitzondering is bedoelt om iemand aan de hand van zijn of haar IP nummer toegang tot de website te verlenen of weigeren. Voor een wildcard in het IP nummer gebruik %, gebruik een ^ om een IP reeks te starten (bv ^172.0.) of gebruik $ om een IP reeks te eindigen (bv .0.1$).';
 	$_lang['clientexceptions.exception_create']							= 'Nieuwe uitzondering';
 	$_lang['clientexceptions.exception_update']							= 'Uitzondering wijzigen';
 	$_lang['clientexceptions.exception_remove']							= 'Uitzondering verwijderen';
@@ -74,5 +74,7 @@
 	$_lang['clientexceptions.import_read_failed']						= 'Er is een fout opgetreden tijdens het importeren van de uitzonderingen, het CSV bestand kon niet gelezen worden.';
 	$_lang['clientexceptions.export_failed']							= 'Het exporteren van de uitzonderingen is mislukt, probeer het nog eens.';
 	$_lang['clientexceptions.export_dir_failed']						= 'Er is een fout opgetreden tijdens het exporteren van de uitzonderingen, de export folder kon niet aangemaakt worden.';
+	
+	$_lang['clientexceptions.error_own_ip']								= 'Het is niet mogelijk om jezelf de toegang te weigeren.';
 	
 ?>

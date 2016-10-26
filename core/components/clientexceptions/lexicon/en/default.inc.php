@@ -29,7 +29,7 @@
 			
 	$_lang['clientexceptions.exception']								= 'Exception';
 	$_lang['clientexceptions.exceptions']								= 'Exceptions';
-	$_lang['clientexceptions.exceptions_desc']							= 'Here you can set IP exceptions for the MODX site. An IP exception is meant to give some one with use of his or her IP number grant or deny to the website. For a wildcard in the IP number use %, use ^ to start an IP range (ex. ^127.0.) or use $ to end an IP range (ex. .0.1$).';
+	$_lang['clientexceptions.exceptions_desc']							= 'Here you can manage the IP exceptions for your site. An IP exception is meant to give some one with use of his or her IP number grant or deny to the website. For a wildcard in the IP number use %, use ^ to start an IP range (ex. ^127.0.) or use $ to end an IP range (ex. .0.1$).';
 	$_lang['clientexceptions.exception_create']							= 'Create new exception';
 	$_lang['clientexceptions.exception_update']							= 'Update exception.';
 	$_lang['clientexceptions.exception_remove']							= 'Delete exception';
@@ -74,5 +74,7 @@
 	$_lang['clientexceptions.import_read_failed']						= 'An error occurred while importing the exceptions, the CSV could not be not be read.';
 	$_lang['clientexceptions.export_failed']							= 'An error occurred while exporting the exceptions, try again.';
 	$_lang['clientexceptions.export_dir_failed']						= 'An error occurred while exporting the exceptions, the import directory could not be created.';
+	
+	$_lang['clientexceptions.error_own_ip']								= 'It is not possible to deny your own acces.';
 	
 ?>

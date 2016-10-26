@@ -27,7 +27,7 @@
 		 * @acces public.
 		 * @var String.
 		 */
-		public $classKey = 'ClientExceptionsExeptions';
+		public $classKey = 'ClientExceptionsExceptions';
 		
 		/**
 		 * @acces public.

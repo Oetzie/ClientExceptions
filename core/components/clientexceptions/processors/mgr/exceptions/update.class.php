@@ -60,6 +60,20 @@
 
 			return parent::initialize();
 		}
+		
+		/**
+		 * @acces public.
+		 * @return Mixed.
+		 */
+		public function beforeSave() {
+			if ($_SERVER['REMOTE_ADDR'] == $this->getProperty('ip')) {
+				if ('0' == $this->getProperty('type')) {
+					$this->addFieldError('ip', $this->modx->lexicon('clientexceptions.error_own_ip'));
+				}
+			}
+
+			return parent::beforeSave();
+		}
 	}
 	
 	return 'ClientExceptionsExceptionsUpdateProcessor';
