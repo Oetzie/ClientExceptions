@@ -92,7 +92,7 @@
 					$context[] = $value->toArray();
 				}
 			}
-			
+
 			return 1 == count($context) ? 0 : 1;
 		}
 		

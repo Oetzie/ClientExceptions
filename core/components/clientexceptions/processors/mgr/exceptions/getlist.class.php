@@ -79,25 +79,33 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
+			$c->leftjoin('modContext', 'modContext', array('ClientExceptionsExceptions.context = modContext.key'));
+			$c->select($this->modx->getSelectColumns('ClientExceptionsExceptions', 'ClientExceptionsExceptions'));
+			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
+			
 			$context = $this->getProperty('context');
 			
 			if (!empty($context)) {
-				$c->where(array('context' => $context));
+				$c->where(array(
+					'ClientExceptionsExceptions.context' => $context
+				));
 			}
 			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {
 				$c->where(array(
-					'ip:LIKE' 		=> '%'.$query.'%',
-					'OR:name:LIKE' 	=> '%'.$query.'%'
+					'ClientExceptionsExceptions.ip:LIKE' 		=> '%'.$query.'%',
+					'OR:ClientExceptionsExceptions.name:LIKE' 	=> '%'.$query.'%'
 				));
 			}
 			
 			$type = $this->getProperty('type');
 			
 			if ('' != $type) {
-				$c->where(array('type' => $type));
+				$c->where(array(
+					'ClientExceptionsExceptions.type' => $type
+				));
 			}
 			
 			return $c;
@@ -109,7 +117,14 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			$array = $object->toArray();
+			if (null !== $object->context_key) {
+				$array = $object->toArray();
+			} else {
+				$array = array_merge($object->toArray(), array(
+					'context_key' 	=> '-',
+					'context_name'	=> $this->modx->lexicon('clientexceptions.context_independent')
+				));
+			}
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {
 				$array['editedon'] = '';

@@ -72,6 +72,14 @@
 				'delimiter'	=> ';'
 			));
 			
+			if (null === $this->getProperty('download')) {
+				$this->setProperty('download', 0);
+			}
+			
+			if (null === $this->getProperty('headers')) {
+				$this->setProperty('headers', 0);
+			}
+			
 			return parent::initialize();
 		}
 		
@@ -102,8 +110,14 @@
 		public function setFile() {
 			if (false !== ($fopen = fopen($this->getProperty('directory').$this->getProperty('filename'), 'w'))) {
 				$columns = array('name', 'ip', 'type', 'description', 'active', 'context');
+								
+				$headers = $this->getProperty('headers');
 				
-				$rows = array($columns);
+				if (!empty($headers)) {
+					$rows = array($columns);
+				} else {
+					$rows = array();
+				}
 				
 				foreach ($this->modx->getCollection($this->classKey) as $exception) {
 					$rows[$exception->id] = $exception->toArray();

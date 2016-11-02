@@ -59,13 +59,16 @@
 	$_lang['clientexceptions.label_active_desc']						= '';
 	$_lang['clientexceptions.label_import_file']						= 'Bestand';
 	$_lang['clientexceptions.label_import_file_desc']					= 'Selecteer een geldig CSV bestand.';
-	$_lang['clientexceptions.label_delimiter']							= 'Scheidingsteken';
-	$_lang['clientexceptions.label_delimiter_desc']						= 'Het scheidingsteken waarmee kolommen gescheiden worden. Standaard is ";".';
-	$_lang['clientexceptions.label_headers']							= 'Eerste rij kolom titels.';
-	$_lang['clientexceptions.label_headers_desc']						= '';
-
+	$_lang['clientexceptions.label_import_delimiter']					= 'Scheidingsteken';
+	$_lang['clientexceptions.label_import_delimiter_desc']				= 'Het scheidingsteken waarmee kolommen gescheiden worden. Standaard is ";".';
+	$_lang['clientexceptions.label_import_headers']						= 'Eerste rij zijn kolommen.';
+	$_lang['clientexceptions.label_import_headers_desc']				= '';
+	$_lang['clientexceptions.label_import_reset']						= 'Verwijder alle huidige uitzonderingen.';
+	$_lang['clientexceptions.label_import_reset_desc']					= '';
+	
 	$_lang['clientexceptions.filter_context']							= 'Filter op context...';
 	$_lang['clientexceptions.filter_type']								= 'Filter op type...';
+	$_lang['clientexceptions.context_independent']						= 'Onafhankelijk';			
 	$_lang['clientexceptions.type_deny']								= 'Weigeren';
 	$_lang['clientexceptions.type_grant']								= 'Verlenen';
 	$_lang['clientexceptions.import_dir_failed']						= 'Er is een fout opgetreden tijdens het importeren van de uitzonderingen, de import folder kon niet aangemaakt worden.';

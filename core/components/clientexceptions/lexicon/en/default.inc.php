@@ -59,13 +59,16 @@
 	$_lang['clientexceptions.label_active_desc']						= '';
 	$_lang['clientexceptions.label_import_file']						= 'File';
 	$_lang['clientexceptions.label_import_file_desc']					= 'Select a valid CSV file.';
-	$_lang['clientexceptions.label_delimiter']							= 'Delimiter';
-	$_lang['clientexceptions.label_delimiter_desc']						= 'The delimiter to separate the columns. Default is ";".';
-	$_lang['clientexceptions.label_headers']							= 'First row column titles.';
-	$_lang['clientexceptions.label_headers_desc']						= '';
+	$_lang['clientexceptions.label_import_delimiter']					= 'Delimiter';
+	$_lang['clientexceptions.label_import_delimiter_desc']				= 'The delimiter to separate the columns. Default is ";".';
+	$_lang['clientexceptions.label_import_headers']						= 'First rows are columns';
+	$_lang['clientexceptions.label_import_headers_desc']				= '';
+	$_lang['clientexceptions.label_import_reset']						= 'Delete all current exeptions.';
+	$_lang['clientexceptions.label_import_reset_desc']					= '';
 
 	$_lang['clientexceptions.filter_context']							= 'Filter on context...';
 	$_lang['clientexceptions.filter_type']								= 'Filter on type...';
+	$_lang['clientexceptions.context_independent']						= 'Independent';	
 	$_lang['clientexceptions.type_deny']								= 'Deny';
 	$_lang['clientexceptions.type_grant']								= 'Grant';
 	$_lang['clientexceptions.import_dir_failed']						= 'An error occurred while importing the exceptions, the import directory could not be created.';

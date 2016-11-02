@@ -66,7 +66,7 @@ ClientExceptions.grid.Exceptions = function(config) {
 	        	fn			: this.filterSearch,
 	        	scope		: this
 	        },
-	        'render'		: {
+	        'render'	: {
 		        fn			: function(cmp) {
 			        new Ext.KeyMap(cmp.getEl(), {
 				        key		: Ext.EventObject.ENTER,
@@ -74,7 +74,7 @@ ClientExceptions.grid.Exceptions = function(config) {
 				        scope	: cmp
 			        });
 		        },
-		        scope	: this
+		        scope		: this
 	        }
         }
     }, {
@@ -150,7 +150,7 @@ ClientExceptions.grid.Exceptions = function(config) {
 			renderer	: this.renderDate
         }, {
             header		: _('context'),
-            dataIndex	: 'context',
+            dataIndex	: 'context_name',
             sortable	: true,
             hidden		: true,
             editable	: false
@@ -167,12 +167,12 @@ ClientExceptions.grid.Exceptions = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/exceptions/updatefromgrid',
-        fields		: ['id', 'context', 'type', 'ip', 'name', 'description', 'active', 'editedon'],
+        fields		: ['id', 'context', 'context_key', 'context_name', 'type', 'ip', 'name', 'description', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',
         grouping	: 0 == parseInt(ClientExceptions.config.context) ? false : true,
-        groupBy		: 'context',
+        groupBy		: 'context_name',
         singleText	: _('clientexceptions.exception'),
         pluralText	: _('clientexceptions.exceptions'),
         plugins		: expander,
@@ -264,14 +264,14 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
     },
     removeException: function(btn, e) {
     	MODx.msg.confirm({
-        	title 	: _('clientexceptions.exception_remove'),
-        	text	: _('clientexceptions.exception_remove_confirm'),
-        	url		: ClientExceptions.config.connector_url,
-        	params	: {
-            	action	: 'mgr/exceptions/remove',
-            	id		: this.menu.record.id
+        	title 		: _('clientexceptions.exception_remove'),
+        	text		: _('clientexceptions.exception_remove_confirm'),
+        	url			: ClientExceptions.config.connector_url,
+        	params		: {
+            	action		: 'mgr/exceptions/remove',
+            	id			: this.menu.record.id
             },
-            listeners: {
+            listeners	: {
             	'success'	: {
             		fn			: this.refresh,
             		scope		: this
@@ -287,14 +287,14 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
         }
         
     	MODx.msg.confirm({
-        	title 	: _('clientexceptions.exceptions_remove_selected'),
-        	text	: _('clientexceptions.exceptions_remove_selected_confirm'),
-        	url		: ClientExceptions.config.connector_url,
-        	params	: {
-            	action	: 'mgr/exceptions/removeselected',
-            	ids		: cs
+        	title 		: _('clientexceptions.exceptions_remove_selected'),
+        	text		: _('clientexceptions.exceptions_remove_selected_confirm'),
+        	url			: ClientExceptions.config.connector_url,
+        	params		: {
+            	action		: 'mgr/exceptions/removeselected',
+            	ids			: cs
             },
-            listeners: {
+            listeners	: {
             	'success'	: {
             		fn			: function() {
             			this.getSelectionModel().clearSelections(true);
@@ -313,15 +313,15 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
         }
         
     	MODx.msg.confirm({
-        	title 	: _('clientexceptions.exceptions_activate_selected'),
-        	text	: _('clientexceptions.exceptions_activate_selected_confirm'),
-        	url		: ClientExceptions.config.connector_url,
-        	params	: {
-            	action	: 'mgr/exceptions/activateselected',
-            	ids		: cs,
-            	type	: btn.name
+        	title 		: _('clientexceptions.exceptions_activate_selected'),
+        	text		: _('clientexceptions.exceptions_activate_selected_confirm'),
+        	url			: ClientExceptions.config.connector_url,
+        	params		: {
+            	action		: 'mgr/exceptions/activateselected',
+            	ids			: cs,
+            	type		: btn.name
             },
-            listeners: {
+            listeners	: {
             	'success'	: {
             		fn			: function() {
             			this.getSelectionModel().clearSelections(true);
@@ -347,33 +347,37 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
             			this.refresh();
             		},
 		        	scope		: this
-		        }
+		        },
+		        'failure'	: {
+			        fn  		: function(response) {
+				    	MODx.msg.alert(_('failure'), response.message);
+					},
+					scope		: this
+				}
 	         }
         });
         
         this.importExceptionsWindow.show(e.target);
     },
     exportExceptions: function(btn, e) {
-		MODx.Ajax.request({
-			url		: ClientExceptions.config.connector_url,
-			params	: {
-            	action	: 'mgr/exceptions/export'
-            },
-			listeners: {
-				'success'	: {
-					fn			: function() {
-						location.href = ClientExceptions.config.connector_url + '?action=mgr/exceptions/export&download=1&HTTP_MODAUTH=' + MODx.siteId;
-					},
-					scope		: this
-				},
-				'failure'	: {
-					fn 			: function() {
-
-					},
-					scope		: this
-				}
-			}
-		});
+	    if (this.exportExceptionsWindow) {
+	        this.exportExceptionsWindow.destroy();
+        }
+        
+        this.exportExceptionsWindow = MODx.load({
+	        xtype		: 'clientexceptions-window-exceptions-export',
+	        closeAction	:'close',
+	        listeners	: {
+		        'success'	: {
+            		fn			: function() {
+            			location.href = ClientExceptions.config.connector_url + '?action=' + this.exportExceptionsWindow.baseParams.action + '&download=1&HTTP_MODAUTH=' + MODx.siteId;
+            		},
+		        	scope		: this
+		        }
+	         }
+        });
+        
+        this.exportExceptionsWindow.show(e.target);
     },
     renderType: function(d, c) {
     	c.css = 1 == parseInt(d) || d ? 'green' : 'red';
@@ -405,10 +409,6 @@ ClientExceptions.window.CreateException = function(config) {
         url			: ClientExceptions.config.connector_url,
         baseParams	: {
             action		: 'mgr/exceptions/create'
-        },
-        defauls		: {
-	        labelAlign	: 'top',
-            border		: false
         },
         fields		: [{
         	layout		: 'column',
@@ -480,7 +480,6 @@ ClientExceptions.window.CreateException = function(config) {
 		            fieldLabel	: _('clientexceptions.label_ipnumber'),
 		            description	: MODx.expandHelp ? '' : _('clientexceptions.label_ipnumber_desc'),
 		            name		: 'ip',
-		            id			: 'clientexceptions-custom-ip-create',
 		            anchor		: '100%',
 		            allowBlank	: false
 		        }, {
@@ -497,8 +496,9 @@ ClientExceptions.window.CreateException = function(config) {
 		        	text		: _('clientexceptions.label_own_ipnumber'),
 		        	anchor		: '100%',
 		        	handler		: function() {
-			        	Ext.getCmp('clientexceptions-custom-ip-create').setValue(ClientExceptions.config.remoteip);
-		        	}
+						this.fp.getForm().findField('ip').setValue(ClientExceptions.config.remoteip);
+		        	},
+		        	scope 		: this
 		        }]
         	}]
         }, {
@@ -542,10 +542,6 @@ ClientExceptions.window.UpdateException = function(config) {
         url			: ClientExceptions.config.connector_url,
         baseParams	: {
             action		: 'mgr/exceptions/update'
-        },
-        defauls		: {
-	        labelAlign	: 'top',
-            border		: false
         },
         fields		: [{
             xtype		: 'hidden',
@@ -620,7 +616,6 @@ ClientExceptions.window.UpdateException = function(config) {
 		            fieldLabel	: _('clientexceptions.label_ipnumber'),
 		            description	: MODx.expandHelp ? '' : _('clientexceptions.label_ipnumber_desc'),
 		            name		: 'ip',
-		            id			: 'clientexceptions-custom-ip-update',
 		            anchor		: '100%',
 		            allowBlank	: false
 		        }, {
@@ -637,8 +632,9 @@ ClientExceptions.window.UpdateException = function(config) {
 		        	text		: _('clientexceptions.label_own_ipnumber'),
 		        	anchor		: '100%',
 		        	handler		: function() {
-			        	Ext.getCmp('clientexceptions-custom-ip-update').setValue(ClientExceptions.config.remoteip);
-		        	}
+						this.fp.getForm().findField('ip').setValue(ClientExceptions.config.remoteip);
+		        	},
+		        	scope 		: this
 		        }]
         	}]
         }, {
@@ -683,10 +679,6 @@ ClientExceptions.window.ImportExceptions = function(config) {
         baseParams	: {
             action		: 'mgr/exceptions/import'
         },
-        defauls		: {
-	        labelAlign	: 'top',
-            border		: false
-        },
         fields		: [{
 	        xtype		: 'fileuploadfield',
             fieldLabel	: _('clientexceptions.label_import_file'),
@@ -700,24 +692,36 @@ ClientExceptions.window.ImportExceptions = function(config) {
             cls			: 'desc-under'
         }, {
 	        xtype		: 'textfield',
-            fieldLabel	: _('clientexceptions.label_delimiter'),
-            description	: MODx.expandHelp ? '' : _('clientexceptions.label_delimiter_desc'),
+            fieldLabel	: _('clientexceptions.label_import_delimiter'),
+            description	: MODx.expandHelp ? '' : _('clientexceptions.label_import_delimiter_desc'),
             name		: 'delimiter',
             anchor		: '100%',
             allowBlank	: false,
             value 		: ';'
         }, {
         	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('clientexceptions.label_delimiter_desc'),
+            html		: _('clientexceptions.label_import_delimiter_desc'),
             cls			: 'desc-under'
         }, {
-        	xtype		: 'checkbox',
-        	boxLabel	: _('clientexceptions.label_headers'),
-        	anchor		: '100%',
-        	name		: 'headers',
-        	checked		: true,
-        	inputValue	: 1
-        }],
+			xtype		: 'checkboxgroup',
+			hideLabel 	: true,
+			columns 	: 1,
+			items 		: [{
+				xtype		: 'checkbox',
+				boxLabel	: _('clientexceptions.label_import_headers'),
+				anchor		: '100%',
+				name		: 'headers',
+				checked		: true,
+				inputValue	: 1
+			}, {
+				xtype		: 'checkbox',
+				boxLabel	: _('clientexceptions.label_import_reset'),
+				anchor		: '100%',
+				name		: 'reset',
+				checked		: false,
+				inputValue	: 1
+			}]
+	    }],
         fileUpload	: true,
         saveBtnText	: _('import')
     });
@@ -729,6 +733,52 @@ Ext.extend(ClientExceptions.window.ImportExceptions, MODx.Window);
 
 Ext.reg('clientexceptions-window-exceptions-import', ClientExceptions.window.ImportExceptions);
 
+ClientExceptions.window.ExportExceptions = function(config) {
+    config = config || {};
+    
+    Ext.applyIf(config, {
+    	autoHeight	: true,
+        title 		: _('clientexceptions.exceptions_export'),
+        url			: ClientExceptions.config.connector_url,
+        baseParams	: {
+            action		: 'mgr/exceptions/export'
+        },
+        fields		: [{
+	        xtype		: 'textfield',
+            fieldLabel	: _('clientexceptions.label_import_delimiter'),
+            description	: MODx.expandHelp ? '' : _('clientexceptions.label_import_delimiter_desc'),
+            name		: 'delimiter',
+            anchor		: '100%',
+            allowBlank	: false,
+            value 		: ';'
+        }, {
+        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+            html		: _('clientexceptions.label_import_delimiter_desc'),
+            cls			: 'desc-under'
+        }, {
+			xtype		: 'checkboxgroup',
+			hideLabel 	: true,
+			columns 	: 1,
+			items 		: [{
+				xtype		: 'checkbox',
+				boxLabel	: _('clientexceptions.label_import_headers'),
+				anchor		: '100%',
+				name		: 'headers',
+				checked		: true,
+				inputValue	: 1
+			}]
+	    }],
+        fileUpload	: true,
+        saveBtnText	: _('export')
+    });
+    
+    ClientExceptions.window.ExportExceptions.superclass.constructor.call(this, config);
+};
+
+Ext.extend(ClientExceptions.window.ExportExceptions, MODx.Window);
+
+Ext.reg('clientexceptions-window-exceptions-export', ClientExceptions.window.ExportExceptions);
+
 ClientExceptions.combo.ExceptionTypes = function(config) {
     config = config || {};
     
@@ -737,8 +787,8 @@ ClientExceptions.combo.ExceptionTypes = function(config) {
             mode	: 'local',
             fields	: ['type','label'],
             data	: [
-               	['0', _('clientexceptions.type_deny')],
-               	['1', _('clientexceptions.type_grant')]
+            	[0, _('clientexceptions.type_deny')],
+				[1, _('clientexceptions.type_grant')]
             ]
         }),
         remoteSort	: ['label', 'asc'],

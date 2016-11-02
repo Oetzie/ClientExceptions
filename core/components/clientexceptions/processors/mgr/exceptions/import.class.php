@@ -56,9 +56,17 @@
 
 			$this->setDefaultProperties(array(
 				'filename'	=> $this->objectType.'.csv',
-				'directory'	=> $this->modx->getOption('core_path').'cache/export/clientexceptions/',
+				'directory'	=> $this->modx->getOption('core_path').'cache/import/clientexceptions/',
 				'delimiter'	=> ';'
 			));
+			
+			if (null === $this->getProperty('headers')) {
+				$this->setProperty('headers', 0);
+			}
+			
+			if (null === $this->getProperty('reset')) {
+				$this->setProperty('reset', 0);
+			}
 			
 			return parent::initialize();
 		}
@@ -82,11 +90,19 @@
 				if ('csv' == strtolower($extension)) {
 					if (move_uploaded_file($_FILES['file']['tmp_name'], $this->getProperty('directory').$newFilename)) {
 						if (false !== ($fopen = fopen($this->getProperty('directory').$newFilename, 'r'))) {
+							$reset = $this->getProperty('reset');
+							
+							if (!empty($reset)) {
+								$this->modx->removeCollection($this->classKey, array());
+							}
+							
 							$current = 0;
 							$columns = array('name', 'ip', 'type', 'description', 'active', 'context');
 							
 							while (($row = fgetcsv($fopen, 1000, $this->getProperty('delimiter')))) {
-								if (0 == $current && !empty($this->getProperty('headers'))) {
+								$headers = $this->getProperty('headers');
+								
+								if (0 == $current && !empty($headers)) {
 									$columns = $row;
 								} else {
 									$data = array(
