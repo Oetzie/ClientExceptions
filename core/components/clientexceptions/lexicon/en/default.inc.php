@@ -50,7 +50,7 @@
 	$_lang['clientexceptions.label_name']								= 'Name';
 	$_lang['clientexceptions.label_name_desc']							= 'The name of the exception.';
 	$_lang['clientexceptions.label_context']							= 'Context';
-	$_lang['clientexceptions.label_context_desc']						= 'The context of the exception.';
+	$_lang['clientexceptions.label_context_desc']						= 'The context of the exception. If there is no context selected the exception will be valid on all contexts.';
 	$_lang['clientexceptions.label_type']								= 'Exceptions type';
 	$_lang['clientexceptions.label_type_desc']							= 'The type of the exception, this can be "grant" or "deny".';
 	$_lang['clientexceptions.label_description']						= 'Description/reason';

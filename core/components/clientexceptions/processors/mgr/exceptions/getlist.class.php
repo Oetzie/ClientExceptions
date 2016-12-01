@@ -67,7 +67,8 @@
 			$this->clientexceptions = $this->modx->getService('clientexceptions', 'ClientExceptions', $this->modx->getOption('clientexceptions.core_path', null, $this->modx->getOption('core_path').'components/clientexceptions/').'model/clientexceptions/');
 
 			$this->setDefaultProperties(array(
-				'dateFormat' => $this->modx->getOption('manager_date_format') .', '. $this->modx->getOption('manager_time_format')
+				'context'		=> '',
+				'dateFormat' 	=> $this->modx->getOption('manager_date_format') .', '. $this->modx->getOption('manager_time_format')
 			));
 			
 			return parent::initialize();
@@ -79,24 +80,16 @@
 		 * @return Object.
 		 */
 		public function prepareQueryBeforeCount(xPDOQuery $c) {
-			$c->leftjoin('modContext', 'modContext', array('ClientExceptionsExceptions.context = modContext.key'));
-			$c->select($this->modx->getSelectColumns('ClientExceptionsExceptions', 'ClientExceptionsExceptions'));
-			$c->select($this->modx->getSelectColumns('modContext', 'modContext', 'context_', array('key', 'name')));
-			
-			$context = $this->getProperty('context');
-			
-			if (!empty($context)) {
-				$c->where(array(
-					'ClientExceptionsExceptions.context' => $context
-				));
-			}
+			$c->where(array(
+				'context' => $this->getProperty('context')
+			));
 			
 			$query = $this->getProperty('query');
 			
 			if (!empty($query)) {
 				$c->where(array(
-					'ClientExceptionsExceptions.ip:LIKE' 		=> '%'.$query.'%',
-					'OR:ClientExceptionsExceptions.name:LIKE' 	=> '%'.$query.'%'
+					'ip:LIKE' 		=> '%'.$query.'%',
+					'OR:name:LIKE' 	=> '%'.$query.'%'
 				));
 			}
 			
@@ -104,7 +97,7 @@
 			
 			if ('' != $type) {
 				$c->where(array(
-					'ClientExceptionsExceptions.type' => $type
+					'type' => $type
 				));
 			}
 			
@@ -117,13 +110,13 @@
 		 * @return Array.
 		 */
 		public function prepareRow(xPDOObject $object) {
-			if (null !== $object->context_key) {
-				$array = $object->toArray();
-			} else {
-				$array = array_merge($object->toArray(), array(
-					'context_key' 	=> '-',
-					'context_name'	=> $this->modx->lexicon('clientexceptions.context_independent')
-				));
+			$array = array_merge($object->toArray(), array(
+				'context_key' 	=> '',
+				'context_name'	=> $this->modx->lexicon('clientexceptions.context_independent')
+			));
+			
+			if (null !== ($context = $object->getOne('modContext'))) {
+				$array['context_name'] = $context->name;
 			}
 
 			if (in_array($array['editedon'], array('-001-11-30 00:00:00', '-1-11-30 00:00:00', '0000-00-00 00:00:00', null))) {

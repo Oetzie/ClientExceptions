@@ -50,7 +50,7 @@
 	$_lang['clientexceptions.label_name']								= 'Naam';
 	$_lang['clientexceptions.label_name_desc']							= 'De naam van de uitzondering.';
 	$_lang['clientexceptions.label_context']							= 'Context';
-	$_lang['clientexceptions.label_context_desc']						= 'De context van de uitzondering.';
+	$_lang['clientexceptions.label_context_desc']						= 'De context van de uitzondering. Als er geen context geselecteerd word geldt deze uitzondering voor alle contexten.';
 	$_lang['clientexceptions.label_type']								= 'Uitzonderingstype';
 	$_lang['clientexceptions.label_type_desc']							= 'De type van de uitzondering, dit kan "weigeren" of "verlenen" zijn.';
 	$_lang['clientexceptions.label_description']						= 'Omschrijving/reden';

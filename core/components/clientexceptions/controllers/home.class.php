@@ -27,11 +27,11 @@
 		 * @acces public.
 		 */
 		public function loadCustomCssJs() {
-			$this->addJavascript($this->modx->getOption('js_url', $this->clientexceptions->config).'mgr/widgets/home.panel.js');
+			$this->addJavascript($this->clientexceptions->config['js_url'].'mgr/widgets/home.panel.js');
 			
-			$this->addJavascript($this->modx->getOption('js_url', $this->clientexceptions->config).'mgr/widgets/exceptions.grid.js');
+			$this->addJavascript($this->clientexceptions->config['js_url'].'mgr/widgets/exceptions.grid.js');
 			
-			$this->addLastJavascript($this->modx->getOption('js_url', $this->clientexceptions->config).'mgr/sections/home.js');
+			$this->addLastJavascript($this->clientexceptions->config['js_url'].'mgr/sections/home.js');
 		}
 		
 		/**
@@ -47,7 +47,7 @@
 		 * @return String.
 		 */
 		public function getTemplateFile() {
-			return $this->modx->getOption('templates_path', $this->clientexceptions->config).'home.tpl';
+			return $this->clientexceptions->config['templates_path'].'home.tpl';
 		}
 	}
 

@@ -41,11 +41,10 @@ ClientExceptions.grid.Exceptions = function(config) {
             	fn			: this.filterType,
             	scope		: this   
 		    }
-		},
-		width: 150
+		}
     }, {
     	xtype		: 'modx-combo-context',
-    	hidden		: 0 == parseInt(ClientExceptions.config.context) ? true : false,
+    	hidden		: ClientExceptions.config.context,
     	name		: 'clientexceptions-filter-context',
         id			: 'clientexceptions-filter-context',
         emptyText	: _('clientexceptions.filter_context'),
@@ -55,7 +54,10 @@ ClientExceptions.grid.Exceptions = function(config) {
             	scope		: this   
 		    }
 		},
-		width: 250
+		baseParams	: {
+			action		: 'context/getlist',
+			exclude		: 'mgr'
+		}
     }, '-', {
         xtype		: 'textfield',
         name 		: 'clientexceptions-filter-search',
@@ -167,14 +169,10 @@ ClientExceptions.grid.Exceptions = function(config) {
         },
         autosave	: true,
         save_action	: 'mgr/exceptions/updatefromgrid',
-        fields		: ['id', 'context', 'context_key', 'context_name', 'type', 'ip', 'name', 'description', 'active', 'editedon'],
+        fields		: ['id', 'context', 'context_name', 'type', 'ip', 'name', 'description', 'active', 'editedon'],
         paging		: true,
         pageSize	: MODx.config.default_per_page > 30 ? MODx.config.default_per_page : 30,
         sortBy		: 'id',
-        grouping	: 0 == parseInt(ClientExceptions.config.context) ? false : true,
-        groupBy		: 'context_name',
-        singleText	: _('clientexceptions.exception'),
-        pluralText	: _('clientexceptions.exceptions'),
         plugins		: expander,
         tools		: [{
             id			: 'plus',
@@ -196,23 +194,28 @@ ClientExceptions.grid.Exceptions = function(config) {
 Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
 	filterType: function(tf, nv, ov) {
         this.getStore().baseParams.type = tf.getValue();
+        
         this.getBottomToolbar().changePage(1);
     },
     filterContext: function(tf, nv, ov) {
         this.getStore().baseParams.context = tf.getValue();
+        
         this.getBottomToolbar().changePage(1);
     },
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
+        
         this.getBottomToolbar().changePage(1);
     },
     clearFilter: function() {
 	    this.getStore().baseParams.type = '';
     	this.getStore().baseParams.context = '';
 	    this.getStore().baseParams.query = '';
+	    
 	    Ext.getCmp('clientexceptions-filter-type').reset();
 	    Ext.getCmp('clientexceptions-filter-context').reset();
 	    Ext.getCmp('clientexceptions-filter-search').reset();
+	    
         this.getBottomToolbar().changePage(1);
     },
     getMenu: function() {
@@ -450,17 +453,18 @@ ClientExceptions.window.CreateException = function(config) {
         	}]
         }, {
 	    	layout		: 'form',
-	    	hidden		: 0 == parseInt(ClientExceptions.config.context) ? true : false,
-			defaults 	: {
-				labelSeparator : ''	
-			},
+	    	labelSeparator : '',
+	    	hidden		: ClientExceptions.config.context,
 	    	items		: [{
 	        	xtype		: 'modx-combo-context',
 	        	fieldLabel	: _('clientexceptions.label_context'),
 	        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_context_desc'),
 	        	name		: 'context',
 	        	anchor		: '100%',
-	        	allowBlank	: true
+				baseParams	: {
+					action		: 'context/getlist',
+					exclude		: 'mgr'
+				}
 	        }, {
 	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
 	        	html		: _('clientexceptions.label_context_desc'),
@@ -586,17 +590,18 @@ ClientExceptions.window.UpdateException = function(config) {
         	}]
         }, {
 	    	layout		: 'form',
-	    	hidden		: 0 == parseInt(ClientExceptions.config.context) ? true : false,
-			defaults 	: {
-				labelSeparator : ''	
-			},
+	    	labelSeparator : '',
+	    	hidden		: ClientExceptions.config.context,
 	    	items		: [{
 	        	xtype		: 'modx-combo-context',
 	        	fieldLabel	: _('clientexceptions.label_context'),
 	        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_context_desc'),
 	        	name		: 'context',
 	        	anchor		: '100%',
-	        	allowBlank	: true
+				baseParams	: {
+					action		: 'context/getlist',
+					exclude		: 'mgr'
+				}
 	        }, {
 	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
 	        	html		: _('clientexceptions.label_context_desc'),

@@ -36,7 +36,8 @@
 		public function initialize() {
 			$this->clientexceptions = $this->modx->getService('clientexceptions', 'ClientExceptions', $this->modx->getOption('clientexceptions.core_path', null, $this->modx->getOption('core_path').'components/clientexceptions/').'model/clientexceptions/');
 			
-			$this->addJavascript($this->modx->getOption('js_url', $this->clientexceptions->config).'mgr/clientexceptions.js');
+			$this->addJavascript($this->clientexceptions->config['js_url'].'mgr/clientexceptions.js');
+			
 			$this->addHtml('<script type="text/javascript">
 				Ext.onReady(function() {
 					MODx.config.help_url = "http://rtfm.modx.com/extras/revo/'.$this->clientexceptions->getHelpUrl().'";
@@ -55,7 +56,7 @@
 		 * @return Array.
 		 */
 		public function getLanguageTopics() {
-			return array('clientexceptions:default');
+			return $this->clientexceptions->config['lexicons'];
 		}
 		
 		/**

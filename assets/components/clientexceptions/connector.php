@@ -23,16 +23,16 @@
 	 */
 	
 	require_once dirname(dirname(dirname(dirname(__FILE__)))).'/config.core.php';
-	require_once MODX_CORE_PATH.'config/'.MODX_CONFIG_KEY.'.inc.php';
-	require_once MODX_CONNECTORS_PATH.'index.php';
+	require_once dirname(dirname(dirname(dirname(__FILE__)))).'/core/config/config.inc.php';
+	require_once dirname(dirname(dirname(dirname(__FILE__)))).'/connectors/index.php';
 	
-	$clientexceptions = $modx->getService('clientexceptions', 'ClientExceptions', $modx->getOption('clientexceptions.core_path', null, $modx->getOption('core_path').'components/clientexceptions/').'model/clientexceptions/');
+	$instance = $modx->getService('clientexceptions', 'ClientExceptions', $modx->getOption('clientexceptions.core_path', null, $modx->getOption('core_path').'components/clientexceptions/').'model/clientexceptions/');
 
-	$modx->lexicon->load($modx->getOption('language', $clientexceptions->config));
-
-	$modx->request->handleRequest(array(
-		'processors_path' 	=> $modx->getOption('processors_path', $clientexceptions->config),
-		'location' 			=> ''
-	));
+	if ($instance instanceOf ClientExceptions) {
+		$modx->request->handleRequest(array(
+			'processors_path' 	=> $instance->config['processors_path'],
+			'location' 			=> ''
+		));
+	}
 
 ?>
