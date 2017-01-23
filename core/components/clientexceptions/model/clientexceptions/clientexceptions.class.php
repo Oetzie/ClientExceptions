@@ -116,10 +116,36 @@
 			);
 			
 			foreach ($this->modx->getCollection('ClientExceptionsExceptions', $criteria) as $exception) {
-				$exceptions[] = $exception->toArray();
+				$exceptions[] = $exception;
 			}
 			
 			return $exceptions;
+		}
+		
+		/**
+		 * @acces public.
+		 * @return null;
+		 */
+		public function run() {
+			foreach ($this->getExceptions() as $exception) {
+				$regex = preg_quote($exception->ip);
+				$regex = str_replace(array('%', '\?', '\^', '\$'), array('\d+', '?', '^', '$'), $regex);
+				
+				if (!preg_match('/\^/si', $regex) && !preg_match('/\$/si', $regex)) {
+					$regex = sprintf('/^%s$/si', $regex);
+				} else {
+					$regex = sprintf('/%s/si', $regex);
+				}
+
+				if (preg_match($regex, $_SERVER['REMOTE_ADDR'])) {
+					$this->modx->setOption('site_status', $exception->type);
+					$this->modx->setOption('site_unavailable_message', $exception->description);
+
+					break;
+				}
+			}
+			
+			return null;
 		}
 	}
 	

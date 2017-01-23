@@ -23,23 +23,12 @@
 	 */
 
 	switch($modx->event->name) {
-		case 'OnWebPageInit':
+		case 'OnHandleRequest':
 			if ($modx->loadClass('ClientExceptions', $modx->getOption('clientexceptions.core_path', null, $modx->getOption('core_path').'components/clientexceptions/').'model/clientexceptions/', true, true)) {
 		        $clientexceptions = new ClientExceptions($modx);
 		        
 			    if ($clientexceptions instanceOf ClientExceptions) {
-					foreach ($clientexceptions->getExceptions() as $exception) {
-						$regex = preg_quote($exception['ip']);
-						$regex = str_replace(array('%', '\?', '\^', '\$'), array('\d+', '?', '^', '$'), $regex);
-						$regex = !preg_match('/\^/si', $regex) && !preg_match('/\$/si', $regex) ? sprintf('/^%s$/si', $regex) : sprintf('/%s/si', $regex);
-	
-						if (preg_match($regex, $_SERVER['REMOTE_ADDR'])) {
-							$modx->setOption('site_status', $exception['type']);
-							$modx->setOption('site_unavailable_message', $exception['description']);
-	
-							break;
-						}
-					}
+					return $clientexceptions->run();
 				}
 			}
 
