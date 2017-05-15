@@ -1,1 +1,0 @@
-<div id="clientexceptions-panel-home-div"></div>

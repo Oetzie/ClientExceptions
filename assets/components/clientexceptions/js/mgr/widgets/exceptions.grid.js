@@ -2,34 +2,20 @@ ClientExceptions.grid.Exceptions = function(config) {
     config = config || {};
 
 	config.tbar = [{
-        text	: _('clientexceptions.exception_create'),
-        cls		:'primary-button',
-        handler	: this.createException,
-        scope	: this
+        text		: _('clientexceptions.exception_create'),
+        cls			: 'primary-button',
+        handler		: this.createException,
+        scope		: this
     }, {
-		text	: _('bulk_actions'),
-		menu	: [{
-			text	: _('clientexceptions.exceptions_remove_selected'),
-			handler	: this.removeSelectedExceptions,
-			scope	: this
-		}, '-', {
-			text	: _('clientexceptions.exceptions_activate_selected'),
-			name	: 'activate',
-			handler	: this.activateSelectedExceptions,
-			scope	: this
+		text		: _('bulk_actions'),
+		menu		: [{
+			text		: _('clientexceptions.exceptions_import'),
+			handler		: this.importExceptions,
+			scope		: this
 		}, {
-			text	: _('clientexceptions.exceptions_deactivate_selected'),
-			name	: 'deactivate',
-			handler	: this.activateSelectedExceptions,
-			scope	: this
-		}, '-', {
-       		text	: _('clientexceptions.exceptions_import'),
-	   		handler	: this.importExceptions,
-	   		scope	: this
-		}, {
-       		text	: _('clientexceptions.exceptions_export'),
-	   		handler	: this.exportExceptions,
-	   		scope	: this
+			text		: _('clientexceptions.exceptions_export'),
+			handler		: this.exportExceptions,
+			scope		: this
 		}]
 	}, '->', {
     	xtype		: 'clientexceptions-combo-type',
@@ -41,22 +27,6 @@ ClientExceptions.grid.Exceptions = function(config) {
             	fn			: this.filterType,
             	scope		: this   
 		    }
-		}
-    }, {
-    	xtype		: 'modx-combo-context',
-    	hidden		: ClientExceptions.config.context,
-    	name		: 'clientexceptions-filter-context',
-        id			: 'clientexceptions-filter-context',
-        emptyText	: _('clientexceptions.filter_context'),
-        listeners	: {
-        	'select'	: {
-            	fn			: this.filterContext,
-            	scope		: this   
-		    }
-		},
-		baseParams	: {
-			action		: 'context/getlist',
-			exclude		: 'mgr'
 		}
     }, '-', {
         xtype		: 'textfield',
@@ -92,8 +62,6 @@ ClientExceptions.grid.Exceptions = function(config) {
         }
     }];
     
-    sm = new Ext.grid.CheckboxSelectionModel();
-    
     expander = new Ext.grid.RowExpander({
         tpl : new Ext.Template(
             '<p class="desc">{description}</p>'
@@ -101,7 +69,7 @@ ClientExceptions.grid.Exceptions = function(config) {
     });
 
     columns = new Ext.grid.ColumnModel({
-       columns: [sm, expander, {
+       columns: [expander, {
             header		: _('clientexceptions.label_name'),
             dataIndex	: 'name',
             sortable	: true,
@@ -125,7 +93,7 @@ ClientExceptions.grid.Exceptions = function(config) {
             dataIndex	: 'type',
             sortable	: true,
             editable	: true,
-            width		: 200,
+            width		: 150,
             fixed		: true,
             renderer	: this.renderType,
             editor		: {
@@ -160,12 +128,12 @@ ClientExceptions.grid.Exceptions = function(config) {
     });
     
     Ext.applyIf(config, {
-    	sm 			: sm,
     	cm			: columns,
         id			: 'clientexceptions-grid-exceptions',
         url			: ClientExceptions.config.connector_url,
         baseParams	: {
-        	action		: 'mgr/exceptions/getlist'
+        	action		: 'mgr/exceptions/getlist',
+        	context		: MODx.request.context || MODx.config.default_context
         },
         autosave	: true,
         save_action	: 'mgr/exceptions/updatefromgrid',
@@ -197,11 +165,6 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
         
         this.getBottomToolbar().changePage(1);
     },
-    filterContext: function(tf, nv, ov) {
-        this.getStore().baseParams.context = tf.getValue();
-        
-        this.getBottomToolbar().changePage(1);
-    },
     filterSearch: function(tf, nv, ov) {
         this.getStore().baseParams.query = tf.getValue();
         
@@ -209,11 +172,9 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
     },
     clearFilter: function() {
 	    this.getStore().baseParams.type = '';
-    	this.getStore().baseParams.context = '';
 	    this.getStore().baseParams.query = '';
 	    
 	    Ext.getCmp('clientexceptions-filter-type').reset();
-	    Ext.getCmp('clientexceptions-filter-context').reset();
 	    Ext.getCmp('clientexceptions-filter-search').reset();
 	    
         this.getBottomToolbar().changePage(1);
@@ -277,59 +238,6 @@ Ext.extend(ClientExceptions.grid.Exceptions, MODx.grid.Grid, {
             listeners	: {
             	'success'	: {
             		fn			: this.refresh,
-            		scope		: this
-            	}
-            }
-    	});
-    },
-    removeSelectedExceptions: function(btn, e) {
-    	var cs = this.getSelectedAsList();
-    	
-        if (cs === false) {
-        	return false;
-        }
-        
-    	MODx.msg.confirm({
-        	title 		: _('clientexceptions.exceptions_remove_selected'),
-        	text		: _('clientexceptions.exceptions_remove_selected_confirm'),
-        	url			: ClientExceptions.config.connector_url,
-        	params		: {
-            	action		: 'mgr/exceptions/removeselected',
-            	ids			: cs
-            },
-            listeners	: {
-            	'success'	: {
-            		fn			: function() {
-            			this.getSelectionModel().clearSelections(true);
-            			this.refresh();
-            		},
-            		scope		: this
-            	}
-            }
-    	});
-    },
-    activateSelectedExceptions: function(btn, e) {
-    	var cs = this.getSelectedAsList();
-    	
-        if (cs === false) {
-        	return false;
-        }
-        
-    	MODx.msg.confirm({
-        	title 		: _('clientexceptions.exceptions_activate_selected'),
-        	text		: _('clientexceptions.exceptions_activate_selected_confirm'),
-        	url			: ClientExceptions.config.connector_url,
-        	params		: {
-            	action		: 'mgr/exceptions/activateselected',
-            	ids			: cs,
-            	type		: btn.name
-            },
-            listeners	: {
-            	'success'	: {
-            		fn			: function() {
-            			this.getSelectionModel().clearSelections(true);
-            			this.refresh();
-            		},
             		scope		: this
             	}
             }
@@ -407,6 +315,7 @@ ClientExceptions.window.CreateException = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+	    width		: 500,
     	autoHeight	: true,
         title 		: _('clientexceptions.exception_create'),
         url			: ClientExceptions.config.connector_url,
@@ -421,7 +330,7 @@ ClientExceptions.window.CreateException = function(config) {
                 labelSeparator : ''
             },
         	items		: [{
-	        	columnWidth	: .8,
+	        	columnWidth	: .9,
 	        	items		: [{
 		        	xtype		: 'textfield',
 		        	fieldLabel	: _('clientexceptions.label_name'),
@@ -436,7 +345,7 @@ ClientExceptions.window.CreateException = function(config) {
 		            cls			: 'desc-under'
 		        }]
         	}, {
-	        	columnWidth	: .2,
+	        	columnWidth	: .1,
 	        	style		: 'margin-right: 0;',
 	        	items		: [{
 			        xtype		: 'checkbox',
@@ -452,25 +361,43 @@ ClientExceptions.window.CreateException = function(config) {
 		        }]
         	}]
         }, {
-	    	layout		: 'form',
-	    	labelSeparator : '',
-	    	hidden		: ClientExceptions.config.context,
-	    	items		: [{
-	        	xtype		: 'modx-combo-context',
-	        	fieldLabel	: _('clientexceptions.label_context'),
-	        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_context_desc'),
-	        	name		: 'context',
-	        	anchor		: '100%',
-				baseParams	: {
-					action		: 'context/getlist',
-					exclude		: 'mgr'
-				}
-	        }, {
-	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-	        	html		: _('clientexceptions.label_context_desc'),
-	        	cls			: 'desc-under'
-	        }]
-	    }, {
+        	layout		: 'column',
+        	border		: false,
+            defaults	: {
+                layout		: 'form',
+                labelSeparator : ''
+            },
+        	items		: [{
+	        	columnWidth	: .5,
+	        	items		: [{
+		        	xtype		: 'clientexceptions-combo-type',
+		        	fieldLabel	: _('clientexceptions.label_type'),
+		        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_type_desc'),
+		        	name		: 'type',
+		        	anchor		: '100%',
+		        	allowBlank	: false
+		        }, {
+		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+		        	html		: _('clientexceptions.label_type_desc'),
+		        	cls			: 'desc-under'
+		        }]
+        	}, {
+	        	columnWidth	: .5,
+	        	style		: 'margin-right: 0;',
+	        	items		: [{
+			        xtype		: 'textfield',
+		            fieldLabel	: _('clientexceptions.label_description'),
+		            description	: MODx.expandHelp ? '' : _('clientexceptions.label_description_desc'),
+		            name		: 'description',
+		            anchor		: '100%',
+		            allowBlank	: true
+		        }, {
+		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+		            html		: _('clientexceptions.label_description_desc'),
+		            cls			: 'desc-under'
+		        }]
+        	}]
+        }, {
         	layout		: 'column',
         	border		: false,
             defaults	: {
@@ -506,28 +433,25 @@ ClientExceptions.window.CreateException = function(config) {
 		        }]
         	}]
         }, {
-        	xtype		: 'clientexceptions-combo-type',
-        	fieldLabel	: _('clientexceptions.label_type'),
-        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_type_desc'),
-        	name		: 'type',
-        	anchor		: '100%',
-        	allowBlank	: false
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-        	html		: _('clientexceptions.label_type_desc'),
-        	cls			: 'desc-under'
-        }, {
-	        xtype		: 'textfield',
-            fieldLabel	: _('clientexceptions.label_description'),
-            description	: MODx.expandHelp ? '' : _('clientexceptions.label_description_desc'),
-            name		: 'description',
-            anchor		: '100%',
-            allowBlank	: true
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('clientexceptions.label_description_desc'),
-            cls			: 'desc-under'
-        }]
+	    	layout		: 'form',
+	    	labelSeparator : '',
+	    	hidden		: ClientExceptions.config.context,
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('clientexceptions.label_context'),
+	        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+				baseParams	: {
+					action		: 'context/getlist',
+					exclude		: 'mgr'
+				}
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('clientexceptions.label_context_desc'),
+	        	cls			: 'desc-under'
+	        }]
+	    }]
     });
     
     ClientExceptions.window.CreateException.superclass.constructor.call(this, config);
@@ -541,6 +465,7 @@ ClientExceptions.window.UpdateException = function(config) {
     config = config || {};
     
     Ext.applyIf(config, {
+	    width		: 500,
     	autoHeight	: true,
         title 		: _('clientexceptions.exception_update'),
         url			: ClientExceptions.config.connector_url,
@@ -589,25 +514,43 @@ ClientExceptions.window.UpdateException = function(config) {
 		        }]
         	}]
         }, {
-	    	layout		: 'form',
-	    	labelSeparator : '',
-	    	hidden		: ClientExceptions.config.context,
-	    	items		: [{
-	        	xtype		: 'modx-combo-context',
-	        	fieldLabel	: _('clientexceptions.label_context'),
-	        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_context_desc'),
-	        	name		: 'context',
-	        	anchor		: '100%',
-				baseParams	: {
-					action		: 'context/getlist',
-					exclude		: 'mgr'
-				}
-	        }, {
-	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-	        	html		: _('clientexceptions.label_context_desc'),
-	        	cls			: 'desc-under'
-			}]
-	    }, {
+        	layout		: 'column',
+        	border		: false,
+            defaults	: {
+                layout		: 'form',
+                labelSeparator : ''
+            },
+        	items		: [{
+	        	columnWidth	: .5,
+	        	items		: [{
+		        	xtype		: 'clientexceptions-combo-type',
+		        	fieldLabel	: _('clientexceptions.label_type'),
+		        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_type_desc'),
+		        	name		: 'type',
+		        	anchor		: '100%',
+		        	allowBlank	: false
+		        }, {
+		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+		        	html		: _('clientexceptions.label_type_desc'),
+		        	cls			: 'desc-under'
+		        }]
+        	}, {
+	        	columnWidth	: .5,
+	        	style		: 'margin-right: 0;',
+	        	items		: [{
+			        xtype		: 'textfield',
+		            fieldLabel	: _('clientexceptions.label_description'),
+		            description	: MODx.expandHelp ? '' : _('clientexceptions.label_description_desc'),
+		            name		: 'description',
+		            anchor		: '100%',
+		            allowBlank	: true
+		        }, {
+		        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+		            html		: _('clientexceptions.label_description_desc'),
+		            cls			: 'desc-under'
+		        }]
+        	}]
+        }, {
         	layout		: 'column',
         	border		: false,
             defaults	: {
@@ -643,28 +586,25 @@ ClientExceptions.window.UpdateException = function(config) {
 		        }]
         	}]
         }, {
-        	xtype		: 'clientexceptions-combo-type',
-        	fieldLabel	: _('clientexceptions.label_type'),
-        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_type_desc'),
-        	name		: 'type',
-        	anchor		: '100%',
-        	allowBlank	: false
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-        	html		: _('clientexceptions.label_type_desc'),
-        	cls			: 'desc-under'
-        }, {
-	        xtype		: 'textfield',
-            fieldLabel	: _('clientexceptions.label_description'),
-            description	: MODx.expandHelp ? '' : _('clientexceptions.label_description_desc'),
-            name		: 'description',
-            anchor		: '100%',
-            allowBlank	: true
-        }, {
-        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
-            html		: _('clientexceptions.label_description_desc'),
-            cls			: 'desc-under'
-        }]
+	    	layout		: 'form',
+	    	labelSeparator : '',
+	    	hidden		: ClientExceptions.config.context,
+	    	items		: [{
+	        	xtype		: 'modx-combo-context',
+	        	fieldLabel	: _('clientexceptions.label_context'),
+	        	description	: MODx.expandHelp ? '' : _('clientexceptions.label_context_desc'),
+	        	name		: 'context',
+	        	anchor		: '100%',
+				baseParams	: {
+					action		: 'context/getlist',
+					exclude		: 'mgr'
+				}
+	        }, {
+	        	xtype		: MODx.expandHelp ? 'label' : 'hidden',
+	        	html		: _('clientexceptions.label_context_desc'),
+	        	cls			: 'desc-under'
+			}]
+	    }]
     });
     
     ClientExceptions.window.UpdateException.superclass.constructor.call(this, config);
@@ -790,17 +730,20 @@ ClientExceptions.combo.ExceptionTypes = function(config) {
     Ext.applyIf(config, {
         store: new Ext.data.ArrayStore({
             mode	: 'local',
-            fields	: ['type','label'],
+            fields	: ['type', 'label', 'cls'],
             data	: [
-            	[0, _('clientexceptions.type_deny')],
-				[1, _('clientexceptions.type_grant')]
+            	[0, _('clientexceptions.type_deny'), 'red'],
+				[1, _('clientexceptions.type_grant'), 'green']
             ]
         }),
         remoteSort	: ['label', 'asc'],
         hiddenName	: 'type',
         valueField	: 'type',
         displayField: 'label',
-        mode		: 'local'
+        mode		: 'local',
+        //tpl			: new Ext.XTemplate('<tpl for=".">' +
+        //	'<div class="x-combo-list-item {cls}">{label}</div>' + 
+        //'</tpl>')
     });
     
     ClientExceptions.combo.ExceptionTypes.superclass.constructor.call(this,config);
